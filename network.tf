@@ -1,4 +1,17 @@
 ##################################################################################
+# DATA
+##################################################################################
+
+data "aws_ssm_parameter" "ami" {
+  name = "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+}
+
+# Declare the data source
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+##################################################################################
 # RESOURCES
 ##################################################################################
 
@@ -54,11 +67,10 @@ resource "aws_subnet" "app-1b" {
 
 # ROUTING #
 resource "aws_route_table" "webapp-rt" {
-  vpc_id = aws_vpc.vpc.id
+  vpc_id = aws_vpc.vpc_webapp.id
 
   route {
     cidr_block       = "0.0.0.0/0"
-    ipv6_cidr_blocks = ["::/0"]
     gateway_id       = aws_internet_gateway.webapp_igw.id
   }
 
