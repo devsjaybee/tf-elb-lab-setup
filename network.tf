@@ -134,7 +134,7 @@ resource "aws_security_group" "web-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["165.225.117.61/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access
@@ -173,7 +173,7 @@ resource "aws_security_group" "app-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["165.225.117.61/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access
@@ -212,7 +212,7 @@ resource "aws_security_group" "db-sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["165.225.117.61/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # outbound internet access

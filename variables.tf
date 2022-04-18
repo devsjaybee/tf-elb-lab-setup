@@ -61,3 +61,9 @@ variable "billing_code" {
   type        = string
   description = "Billing code for resource tagging"
 }
+
+variable "aws_key_pair" {
+  type        = string
+  description = "Private key name for SSH connection"
+  default     = "tf-elb-key"
+}
