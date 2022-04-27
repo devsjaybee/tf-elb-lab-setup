@@ -16,6 +16,7 @@ sudo usermod -a -G docker ec2-user
 sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 docker version
+sudo docker run -d -p 80:80 -p 443:443 -h web1 benpiper/mtwa:web
 EOF
 
   tags = local.common_tags
@@ -39,6 +40,7 @@ sudo usermod -a -G docker ec2-user
 sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 docker version
+sudo docker run -d -p 80:80 -p 443:443 -h web1 benpiper/mtwa:web
 EOF
 
   tags = local.common_tags
@@ -62,6 +64,7 @@ sudo usermod -a -G docker ec2-user
 sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 docker version
+sudo docker run -d -p 80:80 -p 443:443 -h web1 benpiper/mtwa:web
 EOF
 
   tags = local.common_tags

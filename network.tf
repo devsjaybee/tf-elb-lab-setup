@@ -51,7 +51,7 @@ resource "aws_subnet" "app-1a" {
   cidr_block              = var.vpc_subnets_cidr_block[2]
   vpc_id                  = aws_vpc.vpc_webapp.id
   map_public_ip_on_launch = var.map_public_ip_on_launch
-  availability_zone       = data.aws_availability_zones.available.names[2]
+  availability_zone       = data.aws_availability_zones.available.names[0]
 
   tags = local.common_tags
 }
@@ -60,7 +60,7 @@ resource "aws_subnet" "app-1b" {
   cidr_block              = var.vpc_subnets_cidr_block[3]
   vpc_id                  = aws_vpc.vpc_webapp.id
   map_public_ip_on_launch = var.map_public_ip_on_launch
-  availability_zone       = data.aws_availability_zones.available.names[2]
+  availability_zone       = data.aws_availability_zones.available.names[1]
 
   tags = local.common_tags
 }
