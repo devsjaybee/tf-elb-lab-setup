@@ -155,17 +155,17 @@ resource "aws_security_group" "app-sg" {
   # Port 8080,8443 access from web-1a
   ingress {
     from_port   = 8080
-    to_port     = 8443
+    to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_subnets_cidr_block[0]]
+    cidr_blocks = [var.vpc_cidr_block]
   }
 
   # Port 8080,8443 access from web-1b
   ingress {
-    from_port   = 8080
+    from_port   = 8443
     to_port     = 8443
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_subnets_cidr_block[1]]
+    cidr_blocks = [var.vpc_cidr_block]
   }
 
   # SSH access from MyIP

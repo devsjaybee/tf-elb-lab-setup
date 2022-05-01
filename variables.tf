@@ -103,6 +103,17 @@ variable "health_check_protocol" {
 }
 
 
+variable "app_health_check_path" {
+  default     = "/appserverinfo.py"
+  type        = string
+  description = "The destination for the health check request."
+}
+
+variable "app_health_check_port" {
+  default     = "8080"
+  type        = string
+  description = "The port to use to connect with the target."
+}
 
 
 
