@@ -20,6 +20,12 @@ resource "aws_lb_target_group" "web-servers" {
   protocol    = "HTTP"
   vpc_id      = aws_vpc.vpc_webapp.id
 
+  stickiness {    
+    type            = "lb_cookie"    
+    cookie_duration = 10    
+    enabled         = "true"  
+  }
+
   health_check {
    
     # Specify a valid URI (protocol://hostname/path?query).

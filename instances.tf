@@ -17,7 +17,7 @@ sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 docker version
 sudo docker run -d -p 80:80 -p 443:443 -h web1 benpiper/mtwa:web
-# sudo docker run -d -p 80:80 -p 443:443 -h web1 -e APPSERVER="http://internal-app-lb-38248113.ap-northeast-1.elb.amazonaws.com:8080" benpiper/mtwa:web //using 
+# sudo docker run -d -p 80:80 -p 443:443 -h web1 -e APPSERVER="http://internal-app-lb-789656766.ap-northeast-1.elb.amazonaws.com:8080" benpiper/mtwa:web //using 
 EOF
 
   tags = local.common_tags
@@ -165,6 +165,7 @@ sudo usermod -a -G docker ec2-user
 sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 docker version
+sudo docker run -d -h db -p 3306:3306 benpiper/mtwa-db
 EOF
 
   tags = local.common_tags
