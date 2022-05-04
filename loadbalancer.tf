@@ -15,11 +15,11 @@ resource "aws_lb" "web-lb" {
 
 # aws_lb_target_group_web
 resource "aws_lb_target_group" "web-servers" {
-  name        = "web-servers-tg"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.vpc_webapp.id
-
+  name         = "web-servers-tg"
+  port         = 80
+  protocol     = "HTTP"
+  vpc_id       = aws_vpc.vpc_webapp.id
+ 
   stickiness {    
     type            = "lb_cookie"    
     cookie_duration = 10    
@@ -184,4 +184,54 @@ resource "aws_lb_target_group_attachment" "app-3" {
   target_group_arn = aws_lb_target_group.app-servers.arn
   target_id        = aws_instance.app3.id
   port             = 8080
+}
+
+##################################################################################
+# ACM / HTTPS 
+##################################################################################
+
+data "aws_acm_certificate" "certificate" {
+  domain      = "jaybeedev.xyz"
+  statuses    = ["ISSUED"]
+  most_recent = true
+}
+
+# aws_lb_lister
+resource "aws_lb_listener" "web-servers-https" {
+  load_balancer_arn = aws_lb.web-lb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "arn:aws:acm:ap-northeast-1:323357418871:certificate/e96e2d81-1c11-4fae-b586-aebc4feec4ee"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web-servers.arn
+  }
+}
+
+# aws_lb_targe_group_attachment_web
+resource "aws_lb_target_group_attachment" "web-app-1-https" {
+  target_group_arn = aws_lb_target_group.web-servers.arn
+  target_id        = aws_instance.web1.id
+  port             = 443
+}
+
+resource "aws_lb_target_group_attachment" "web-app-2-https" {
+  target_group_arn = aws_lb_target_group.web-servers.arn
+  target_id        = aws_instance.web2.id
+  port             = 443
+}
+
+resource "aws_lb_target_group_attachment" "web-app-3-https" {
+  target_group_arn = aws_lb_target_group.web-servers.arn
+  target_id        = aws_instance.web3.id
+  port             = 443
+}
+
+
+// attach to listener
+resource "aws_lb_listener_certificate" "ssl_certificate" {
+  listener_arn    = aws_lb_listener.web-servers-https.arn
+  certificate_arn = data.aws_acm_certificate.certificate.arn
 }
