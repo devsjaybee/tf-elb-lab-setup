@@ -189,11 +189,60 @@ resource "aws_lb_target_group_attachment" "app-3" {
 ##################################################################################
 # ACM / HTTPS 
 ##################################################################################
-
+# Manualy provision SSL/TLS Cert to ACM
 data "aws_acm_certificate" "certificate" {
   domain      = "jaybeedev.xyz"
   statuses    = ["ISSUED"]
   most_recent = true
+}
+
+# aws_lb_target_group_web
+resource "aws_lb_target_group" "https-web-servers" {
+  name         = "https-web-servers-tg"
+  port         = 443
+  protocol     = "HTTPS"
+  vpc_id       = aws_vpc.vpc_webapp.id
+ 
+  stickiness {    
+    type            = "lb_cookie"    
+    cookie_duration = 10    
+    enabled         = "true"  
+  }
+
+  health_check {
+   
+    # Specify a valid URI (protocol://hostname/path?query).
+    path = var.health_check_path
+
+      # The port the load balancer uses when performing health checks on targets.
+    # The default is to use the port on which each target receives traffic from the load balancer.
+    # Valid values are either ports 1-65536, or traffic-port.
+    port = var.https_health_check_port
+
+    # The number of consecutive successful health checks required before considering an unhealthy target healthy.
+    # The range is 2–10.
+    healthy_threshold = var.health_check_healthy_threshold
+
+    # The number of consecutive failed health checks required before considering a target unhealthy.
+    # The range is 2–10.
+    unhealthy_threshold = var.health_check_unhealthy_threshold
+
+    # The amount of time, in seconds, during which no response from a target means a failed health check.
+    # The range is 2–60 seconds.
+    timeout = var.health_check_timeout
+
+    # The approximate amount of time, in seconds, between health checks of an individual target.
+    # The range is 5–300 seconds.
+    interval = var.health_check_interval
+
+    # The HTTP codes to use when checking for a successful response from a target.
+    # You can specify multiple values (for example, "200,202") or a range of values (for example, "200-299").
+    matcher = var.health_check_matcher
+
+    # The protocol the load balancer uses when performing health checks on targets.
+    # The possible protocols are HTTP and HTTPS.
+    protocol = var.https_health_check_protocol
+  }
 }
 
 # aws_lb_lister
@@ -206,25 +255,25 @@ resource "aws_lb_listener" "web-servers-https" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.web-servers.arn
+    target_group_arn = aws_lb_target_group.https-web-servers.arn
   }
 }
 
 # aws_lb_targe_group_attachment_web
 resource "aws_lb_target_group_attachment" "web-app-1-https" {
-  target_group_arn = aws_lb_target_group.web-servers.arn
+  target_group_arn = aws_lb_target_group.https-web-servers.arn
   target_id        = aws_instance.web1.id
   port             = 443
 }
 
 resource "aws_lb_target_group_attachment" "web-app-2-https" {
-  target_group_arn = aws_lb_target_group.web-servers.arn
+  target_group_arn = aws_lb_target_group.https-web-servers.arn
   target_id        = aws_instance.web2.id
   port             = 443
 }
 
 resource "aws_lb_target_group_attachment" "web-app-3-https" {
-  target_group_arn = aws_lb_target_group.web-servers.arn
+  target_group_arn = aws_lb_target_group.https-web-servers.arn
   target_id        = aws_instance.web3.id
   port             = 443
 }

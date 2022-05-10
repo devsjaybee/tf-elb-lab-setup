@@ -66,6 +66,13 @@ variable "health_check_port" {
   description = "The port to use to connect with the target."
 }
 
+variable "https_health_check_port" {
+  default     = "443"
+  type        = string
+  description = "The port to use to connect with the target."
+}
+
+
 variable "health_check_healthy_threshold" {
   default     = "3"
   type        = string
@@ -102,6 +109,11 @@ variable "health_check_protocol" {
   description = "The protocol to use to connect with the target."
 }
 
+variable "https_health_check_protocol" {
+  default     = "HTTPS"
+  type        = string
+  description = "The protocol to use to connect with the target."
+}
 
 variable "app_health_check_path" {
   default     = "/appserverinfo.py"
