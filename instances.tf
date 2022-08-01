@@ -1,11 +1,12 @@
 #  INSTANCES #
-resource "aws_instance" "web1" {
+resource "aws_instance" "web" {
+  count                  = var.instance_count
   ami                    = data.aws_ssm_parameter.ami.value
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.web-1a.id
+  subnet_id              = aws_subnet.web-subnets[(count.index % var.vpc_subnet_count)].id
   vpc_security_group_ids = [aws_security_group.web-sg.id]
-  private_ip             = "172.31.1.21"
-  key_name               = var.aws_key_pair 
+  private_ip             = var.web_instance_private_ip[count.index]
+  key_name               = var.aws_key_pair
 
   user_data = <<EOF
 #! /bin/bash
@@ -17,70 +18,24 @@ sudo systemctl enable docker
 sudo chmod 666 /var/run/docker.sock
 docker version
 sudo docker run -d -p 80:80 -p 443:443 -h web1 benpiper/mtwa:web
-# sudo docker run -d -p 80:80 -p 443:443 -h web1 -e APPSERVER="http://internal-app-lb-789656766.ap-northeast-1.elb.amazonaws.com:8080" benpiper/mtwa:web //using 
+# sudo docker run -d -p 80:80 -p 443:443 -h web1 -e APPSERVER=" https://app.jaybeedev.xyz:8443" benpiper/mtwa:web 
 EOF
 
   tags = local.common_tags
 
 }
 
-resource "aws_instance" "web2" {
-  ami                    = data.aws_ssm_parameter.ami.value
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.web-1b.id
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
-  private_ip             = "172.31.2.22"
-  key_name               = var.aws_key_pair 
-
-  user_data = <<EOF
-#! /bin/bash
-sudo yum update -y
-sudo amazon-linux-extras install docker -y
-sudo service docker start
-sudo usermod -a -G docker ec2-user
-sudo systemctl enable docker
-sudo chmod 666 /var/run/docker.sock
-docker version
-sudo docker run -d -p 80:80 -p 443:443 -h web2 benpiper/mtwa:web
-EOF
-
-  tags = local.common_tags
-
-}
-
-resource "aws_instance" "web3" {
-  ami                    = data.aws_ssm_parameter.ami.value
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.web-1b.id
-  vpc_security_group_ids = [aws_security_group.web-sg.id]
-  private_ip             = "172.31.2.23"
-  key_name               = var.aws_key_pair 
-
-  user_data = <<EOF
-#! /bin/bash
-sudo yum update -y
-sudo amazon-linux-extras install docker -y
-sudo service docker start
-sudo usermod -a -G docker ec2-user
-sudo systemctl enable docker
-sudo chmod 666 /var/run/docker.sock
-docker version
-sudo docker run -d -p 80:80 -p 443:443 -h web3 benpiper/mtwa:web
-EOF
-
-  tags = local.common_tags
-
-}
 
 # app instances
 
-resource "aws_instance" "app1" {
+resource "aws_instance" "app" {
+  count                  = var.instance_count
   ami                    = data.aws_ssm_parameter.ami.value
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.app-1a.id
+  subnet_id              = aws_subnet.app-subnets[(count.index % var.vpc_subnet_count)].id
   vpc_security_group_ids = [aws_security_group.app-sg.id]
-  private_ip             = "172.31.101.21"
-  key_name               = var.aws_key_pair 
+  private_ip             = var.app_instance_private_ip[count.index]
+  key_name               = var.aws_key_pair
 
   user_data = <<EOF
 #! /bin/bash
@@ -98,63 +53,15 @@ EOF
 
 }
 
-resource "aws_instance" "app2" {
-  ami                    = data.aws_ssm_parameter.ami.value
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.app-1b.id
-  vpc_security_group_ids = [aws_security_group.app-sg.id]
-  private_ip             = "172.31.102.22"
-  key_name               = var.aws_key_pair 
-
-  user_data = <<EOF
-#! /bin/bash
-sudo yum update -y
-sudo amazon-linux-extras install docker -y
-sudo service docker start
-sudo usermod -a -G docker ec2-user
-sudo systemctl enable docker
-sudo chmod 666 /var/run/docker.sock
-docker version
-sudo docker run -d -h app2 -p 8080:8080 -p 8443:8443 benpiper/mtwa:app
-EOF
-
-  tags = local.common_tags
-
-}
-
-resource "aws_instance" "app3" {
-  ami                    = data.aws_ssm_parameter.ami.value
-  instance_type          = var.instance_type
-  subnet_id              = aws_subnet.app-1b.id
-  vpc_security_group_ids = [aws_security_group.app-sg.id]
-  private_ip             = "172.31.102.23"
-  key_name               = var.aws_key_pair 
-
-  user_data = <<EOF
-#! /bin/bash
-sudo yum update -y
-sudo amazon-linux-extras install docker -y
-sudo service docker start
-sudo usermod -a -G docker ec2-user
-sudo systemctl enable docker
-sudo chmod 666 /var/run/docker.sock
-docker version
-sudo docker run -d -h app3 -p 8080:8080 -p 8443:8443 benpiper/mtwa:app
-EOF
-
-  tags = local.common_tags
-
-}
-
 # db instance
 
 resource "aws_instance" "db" {
   ami                    = data.aws_ssm_parameter.ami.value
   instance_type          = var.instance_type
-  subnet_id              = aws_subnet.app-1a.id
+  subnet_id              = aws_subnet.app-subnets[1].id
   vpc_security_group_ids = [aws_security_group.db-sg.id]
-  private_ip             = "172.31.101.99"
-  key_name               = var.aws_key_pair 
+  private_ip             = "172.32.102.99"
+  key_name               = var.aws_key_pair
 
   user_data = <<EOF
 #! /bin/bash

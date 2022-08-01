@@ -1,19 +1,7 @@
-variable "aws_access_key" {
-  type        = string
-  description = "AWS Access Key"
-  sensitive   = true
-}
-
-variable "aws_secret_key" {
-  type        = string
-  description = "AWS Secret Key"
-  sensitive   = true
-}
-
 variable "aws_region" {
   type        = string
   description = "AWS Region to use for resources"
-  default     = "ap-northeast-1"
+  default     = "ap-southeast-1"
 }
 
 ##################################################################################
@@ -23,14 +11,27 @@ variable "aws_region" {
 variable "vpc_cidr_block" {
   type        = string
   description = "Base VPC cidr block"
-  default     = "172.31.0.0/16"
+  default     = "172.32.0.0/16"
 }
 
-variable "vpc_subnets_cidr_block" {
+variable "vpc_subnet_count" {
+  type        = number
+  description = "Number of subnets to create"
+  default     = 2
+}
+
+variable "web_subnets_cidr_block" {
   type        = list(string)
   description = "CIDR block for subnet in VPC"
-  default     = ["172.31.1.0/24", "172.31.2.0/24", "172.31.101.0/24", "172.31.102.0/24"]
+  default     = ["172.32.1.0/24", "172.32.2.0/24"]
 }
+
+variable "app_subnets_cidr_block" {
+  type        = list(string)
+  description = "CIDR block for subnet in VPC"
+  default     = ["172.32.101.0/24", "172.32.102.0/24"]
+}
+
 
 variable "map_public_ip_on_launch" {
   type        = bool
@@ -50,6 +51,23 @@ variable "instance_type" {
   default     = "t2.micro"
 }
 
+variable "web_instance_private_ip" {
+  type        = list(string)
+  description = "Instances private IP"
+  default     = ["172.32.1.21", "172.32.2.22", "172.32.1.23"]
+}
+
+variable "app_instance_private_ip" {
+  type        = list(string)
+  description = "Instances private IP"
+  default     = ["172.32.101.21", "172.32.102.22", "172.32.101.23"]
+}
+
+variable "instance_count" {
+  type        = number
+  description = "Instance count"
+  default     = 3
+}
 ##################################################################################
 # TG HEALTH CHECK
 ##################################################################################
@@ -127,6 +145,11 @@ variable "app_health_check_port" {
   description = "The port to use to connect with the target."
 }
 
+variable "https_app_health_check_port" {
+  default     = "8443"
+  type        = string
+  description = "The port to use to connect with the target."
+}
 
 
 variable "company" {
@@ -148,5 +171,5 @@ variable "billing_code" {
 variable "aws_key_pair" {
   type        = string
   description = "Private key name for SSH connection"
-  default     = "tf-elb-key"
+  default     = "saakeypair"
 }
